@@ -2,8 +2,7 @@ const list = document.querySelector('ul')
 const btnBurguerMenu = document.querySelector('.btn-burguer')
 const btnFoodMenu = document.querySelector('.btn-food')
 const btnVeganMenu = document.querySelector('.btn-vegan')
-const btnBuyning = document.querySelector('.btn-buying')
-const btnAdd = document.querySelector('.btn-add')
+const btnBuying = document.querySelector('.btn-buying')
 
 function formatCurrency(value) {
     const newValue = value.toLocaleString("pt-BR", {
@@ -18,13 +17,13 @@ function menuOption(productsArray) {
 
     let myLi = ''
 
-    productsArray.forEach((product) => {
+    productsArray.forEach((product, index) => {
         myLi += `
                 <li>
                     <img src=${product.src}>
                     <p class="item-name">${product.name}</p>
                     <p class="item-price">${formatCurrency(product.price)}</p>
-                    <button class="btn-add" onclick="addBuy()" value="+">+</button>
+                    <button class="btn-add" onclick="addBuy()" value="+" id="btn-${index}">+</button>
                 </li>
             `
 
@@ -32,7 +31,31 @@ function menuOption(productsArray) {
 
     list.innerHTML = myLi
 
+    addEventListenersToButtons();
+
 }
+
+function menuCheckout(productsArray) {
+
+    let addedItems = productsArray.filter((_, index) => itemsState[`btn-${index}`] && itemsState[`btn-${index}`].added);
+
+    let myLi = ''
+
+    addedItems.forEach((product, index) => {
+        myLi += `
+                <li>
+                    <img src=${product.src}>
+                    <p class="item-name">${product.name}</p>
+                    <p class="item-price">${formatCurrency(product.price)}</p>
+                    <button class="btn-add" onclick="addBuy()" value="-" id="btn-${index}">-</button>
+                </li>
+            `
+
+    })
+
+    document.getElementById('addedItemsList').innerHTML = myLi
+}
+
 
 
 function veganOption() {
@@ -63,14 +86,25 @@ function coverVegan() {
     coverVenganBack.src = './img/capaVegan.jpg'
 }
 
-function addBuy() {
-    console.log('Item Adicionado')
-    const pressBtnAdd = document.querySelector('.btn-add')
+function addEventListenersToButtons() {
 
-    if (pressBtnAdd.value === '+') {
+    document.querySelectorAll('.btn-add').forEach((button) => {
+        button.addEventListener('click', function() {
+            addBuy(this.id)
+        })
+    })
+}
 
-        pressBtnAdd.innerHTML = '-'
+function addBuy(buttonId) {
 
+    console.log('Item Adicionado', buttonId)
+
+    let button = document.getElementById(buttonId);
+
+    if (button.innerHTML === '+') {
+        button.innerHTML = '-';
+    } else if (button.innerHTML === '-') {
+        button.innerHTML = '+';
     }
 }
 
@@ -82,8 +116,7 @@ function addBuy() {
 btnBurguerMenu.addEventListener('click', () => menuOption(menuBurguer))
 btnFoodMenu.addEventListener('click', () => menuOption(menuFood))
 btnVeganMenu.addEventListener('click', veganOption, coverVegan)
-btnBuyning.addEventListener('click', () => console.log('carrinho'))
-
+btnBuying.addEventListener('click', () => menuCheckout(menuBurguer))
 
 
 
