@@ -4,6 +4,12 @@ const btnFoodMenu = document.querySelector('.btn-food')
 const btnVeganMenu = document.querySelector('.btn-vegan')
 const btnBuying = document.querySelector('.btn-buying')
 
+let itemsState = {};
+
+let allProducts = [...menuBurguer, ...menuFood];
+
+let currentProducts = [];
+
 function formatCurrency(value) {
     const newValue = value.toLocaleString("pt-BR", {
         style: "currency",
@@ -13,7 +19,7 @@ function formatCurrency(value) {
     return newValue
 }
 
-function menuOption(productsArray) {
+function menuOption(productsArray, menuType) {
 
     let myLi = ''
 
@@ -23,7 +29,7 @@ function menuOption(productsArray) {
                     <img src=${product.src}>
                     <p class="item-name">${product.name}</p>
                     <p class="item-price">${formatCurrency(product.price)}</p>
-                    <button class="btn-add" onclick="addBuy()" value="+" id="btn-${index}">+</button>
+                    <button class="btn-add" onclick="addBuy()" value="+" id="btn-${menuType}-${index}">+</button>
                 </li>
             `
 
@@ -34,29 +40,6 @@ function menuOption(productsArray) {
     addEventListenersToButtons();
 
 }
-
-function menuCheckout(productsArray) {
-
-    let addedItems = productsArray.filter((_, index) => itemsState[`btn-${index}`] && itemsState[`btn-${index}`].added);
-
-    let myLi = ''
-
-    addedItems.forEach((product, index) => {
-        myLi += `
-                <li>
-                    <img src=${product.src}>
-                    <p class="item-name">${product.name}</p>
-                    <p class="item-price">${formatCurrency(product.price)}</p>
-                    <button class="btn-add" onclick="addBuy()" value="-" id="btn-${index}">-</button>
-                </li>
-            `
-
-    })
-
-    document.getElementById('addedItemsList').innerHTML = myLi
-}
-
-
 
 function veganOption() {
 
@@ -89,22 +72,52 @@ function coverVegan() {
 function addEventListenersToButtons() {
 
     document.querySelectorAll('.btn-add').forEach((button) => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             addBuy(this.id)
         })
     })
 }
+
+function menuCheckout(productsArray) {
+
+    let addedItems = currentProducts.filter((_, index) => itemsState[`btn-${index}`] && itemsState[`btn-${index}`].added);
+    
+    let myLi = ''
+
+    addedItems.forEach((product, index) => {
+        myLi += `
+                <li>
+                    <img src=${product.src}>
+                    <p class="item-name">${product.name}</p>
+                    <p class="item-price">${formatCurrency(product.price)}</p>
+                    <button class="btn-add" onclick="addBuy()" value="-" id="btn-${index}">-</button>
+                </li>
+            `
+
+    })
+
+    list.innerHTML = myLi;
+}
+
+
 
 function addBuy(buttonId) {
 
     console.log('Item Adicionado', buttonId)
 
     let button = document.getElementById(buttonId);
+    let index = buttonId.split('-')[1];
 
     if (button.innerHTML === '+') {
         button.innerHTML = '-';
+
+        itemsState[buttonId] = { added: true, index: parseInt(index) };
     } else if (button.innerHTML === '-') {
         button.innerHTML = '+';
+
+        if (itemsState[buttonId]) {
+            itemsState[buttonId].added = false;
+        }
     }
 }
 
@@ -113,28 +126,23 @@ function addBuy(buttonId) {
 
 
 
-btnBurguerMenu.addEventListener('click', () => menuOption(menuBurguer))
-btnFoodMenu.addEventListener('click', () => menuOption(menuFood))
-btnVeganMenu.addEventListener('click', veganOption, coverVegan)
-btnBuying.addEventListener('click', () => menuCheckout(menuBurguer))
+btnBurguerMenu.addEventListener('click', () => {
+    currentProducts = menuBurguer;
+    menuOption(menuBurguer, 'burguer');
+});
 
+btnFoodMenu.addEventListener('click', () => {
+    currentProducts = menuFood;
+    menuOption(menuFood, 'food');
+});
 
+btnVeganMenu.addEventListener('click', () => {
+    const burguerVegan = menuBurguer.filter((product) => product.vegan);
+    const foodVegan = menuFood.filter((product) => product.vegan);
+    currentProducts = [...burguerVegan, ...foodVegan];
+    menuOption(currentProducts, 'vegan');
+    coverVegan();
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+btnBuying.addEventListener('click', menuCheckout)
 
