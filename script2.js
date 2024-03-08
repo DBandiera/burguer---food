@@ -63,6 +63,7 @@ function menuOption(productsArray, menuType) {
     addEventListenersToButtons();
 }
 
+
 function menuCheckout() {
     list.innerHTML = '';
     let addedItems = Object.values(itemsState).filter(item => item.added);
@@ -72,11 +73,14 @@ function menuCheckout() {
         return;
     }
 
+    let total = 0;
+    
     let itemsByMenu = addedItems.reduce((acc, item) => {
         if (!acc[item.menuType]) {
             acc[item.menuType] = [];
         }
         acc[item.menuType].push(item);
+        total += item.price;
         return acc;
     }, {});
 
@@ -93,6 +97,8 @@ function menuCheckout() {
 
         list.innerHTML += myLi;
     }
+
+    list.innerHTML += `<p class="amount-to-pay">Valor total do Pedido: ${formatCurrency(total)}</p>`
 
     list.innerHTML += `<button class="btn-send-order">Enviar Pedido</button>`
 

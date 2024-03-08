@@ -134,6 +134,7 @@ li {
     border-radius: 5px;
     padding: 5px;
     background-color: rgba(0, 0, 0, 0.55);
+    margin-top: 70px;
     
 }
 
@@ -194,6 +195,21 @@ p {
     padding: 10px;
     text-shadow: 0 0 0.105em rgba(0, 0, 0, 0.5), 0 0 0.205em currentColor;
     font-weight: 300;
+}
+
+.amount-to-pay {
+    height: 60px;
+    border: 2px solid #00ff73;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: aqua;
+    font-size: 18px;
+    text-align: center;
+    padding: 5px;
+
+    position: fixed;
+    z-index: -1;
+    top: 200px;
+    margin: 10px 0 0 100px ;
 }
 
 @media screen and (max-width: 700px) {
